@@ -20,3 +20,5 @@
 🔄 Loop: It processes every person celebrating a birthday today, one by one.<br>
 🤖 AI Generation: It uses Claude Opus 4.7 to craft a fresh, unique subject line and email message for every recipient.<br>
 📧 Send: It delivers the final message through Gmail, automatically pairing the recipient's name with the AI's creativity.<br>
+
+<img width="923" height="201" alt="image" src="https://github.com/user-attachments/assets/f857e948-d2c2-47c9-a59c-802e7039cbb1" />
