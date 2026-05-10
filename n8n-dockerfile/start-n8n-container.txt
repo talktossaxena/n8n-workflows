@@ -1,0 +1,5 @@
+# Create Volume
+podman volume create n8n_data
+
+# Run n8n container
+podman run --network=host -it --rm --name n8n -v n8n_data:/root -v /opt/certs:/opt/certs -e N8N_SECURE_COOKIE=false -e N8N_HOST=server1.example.com -e N8N_PROTOCOL=https -e N8N_PORT=443 -e N8N_SSL_CERT=/opt/certs/server.crt -e N8N_SSL_KEY=/opt/certs/server.key -e NODE_EXTRA_CA_CERTS=/opt/certs/ca-bundle.pem -e WEBHOOK_URL=https://server1.example.com/ -d n8n-custom
