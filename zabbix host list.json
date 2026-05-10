@@ -1,0 +1,223 @@
+{
+  "name": "zabbix host list",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -112
+      ],
+      "id": "7977893a-dd62-4262-b8e5-0bbe1137ecd2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "{\n           \"jsonrpc\": \"2.0\",\n           \"method\": \"host.get\",\n           \"params\": {\n               \"output\": [\n                   \"host\"\n               ]\n           },\n           \"id\": 1\n       }",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -368,
+        -112
+      ],
+      "id": "36b64563-9a2d-462f-85a8-f7ec49613fd5",
+      "name": "List Zabbix Hosts",
+      "extendsCredential": "zabbixApi",
+      "notesInFlow": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -112
+      ],
+      "id": "2dbb3066-5fae-44a6-9e7f-511cd997d259",
+      "name": "Hosts Split"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "51d39cd0-6fd7-4df4-a7b3-b5ef38240d75",
+              "name": "Host Name",
+              "value": "={{ $json.host }}",
+              "type": "string"
+            },
+            {
+              "id": "bd604406-7545-46ef-833c-3223915301bc",
+              "name": "Host ID",
+              "value": "={{ $json.hostid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -112
+      ],
+      "id": "dbe17ffd-fd6d-4cbd-ba7d-ef3af0117942",
+      "name": "Update Column Names",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "compression": false,
+          "fileName": "Zabbix Hosts.xlsx",
+          "headerRow": true,
+          "sheetName": "Zabbix Hosts"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        -112
+      ],
+      "id": "9286bb31-36c6-4a4a-ac9b-32fa66b476b0",
+      "name": "Convert to Excel File"
+    },
+    {
+      "parameters": {
+        "fromEmail": "zabbix-admin@example.com",
+        "toEmail": "sudhanshu.sinha@example.com",
+        "subject": "Zabbix Host List",
+        "emailFormat": "text",
+        "text": "={{ $workflow.name }}",
+        "options": {
+          "appendAttribution": false,
+          "attachments": "data"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        528,
+        -112
+      ],
+      "id": "dca5af30-d2e5-4057-a8b6-4a344ef51312",
+      "name": "Send Email",
+      "webhookId": "5ffed22c-1b29-4d3c-ab42-5968e53b5c1c",
+      "credentials": {
+        "smtp": {
+          "id": "hlptozjprdl23nBh",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "List Zabbix Hosts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Zabbix Hosts": {
+      "main": [
+        [
+          {
+            "node": "Hosts Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hosts Split": {
+      "main": [
+        [
+          {
+            "node": "Update Column Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Column Names": {
+      "main": [
+        [
+          {
+            "node": "Convert to Excel File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Excel File": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a347c2de-cbef-490e-bcec-8c58fd37ca39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f9b7d8392fb9b22e1572f122d2199da1a316578c69792bb5ebd6447fbba818b"
+  },
+  "id": "OXmBwSTW3goxNmtW",
+  "tags": []
+}
