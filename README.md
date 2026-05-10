@@ -1,4 +1,4 @@
-# 🎂 Birthday Wish to Email Automation
+# 🎂 Birthday Wish to Email AI Agent
 
 ### 🛠️ **How it currently works**
 
@@ -11,7 +11,7 @@
 
 <img width="923" height="201" alt="image" src="https://github.com/user-attachments/assets/f857e948-d2c2-47c9-a59c-802e7039cbb1" />
 
-# 🎂 Birthday Wish to WhatsApp Automation
+# 🎂 Birthday Wish to WhatsApp AI Agent
 
 ### 🛠️ **How it currently works**
 
