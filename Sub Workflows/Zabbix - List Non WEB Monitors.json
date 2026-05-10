@@ -1,0 +1,529 @@
+{
+  "name": "Zabbix - List Non WEB Monitors",
+  "nodes": [
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"host.get\",\n    \"params\": {\n      \"output\": [\"hostid\",\"host\",\"name\"],\n      \"selectTags\": \"extend\",\n      \"tags\": [\n        {\n          \"tag\": \"APP\",\n          \"value\": \"{{ $json.value }}\",\n          \"operator\": 1\n\t}\n      ]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1296,
+        32
+      ],
+      "id": "ddfd8d2a-6323-4ef0-a095-cc28ea501b8d",
+      "name": "Host Get",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"item.get\",\n  \"params\": {\n    \"hostids\": \"{{ $json.hostid }}\",\n    \"output\": [\"itemid\",\"type\",\"name\",\"key_\",\"delay\",\"value_type\",\"username\",\"password\",\"params\",\"status\",\"lastvalue\"],\n    \"selectTags\": \"extend\",\n    \"selectHosts\": [\"hostid\",\"name\",\"proxyid\",\"status\"],\n    \"selectTriggers\": [\"triggerid\"]\n  },\n  \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -848,
+        32
+      ],
+      "id": "3973e138-2e90-4abc-9a11-ed059a946517",
+      "name": "Items Get",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd101a20-7b4d-4617-8ffd-5b6a933cb6a1",
+              "name": "Host Name",
+              "value": "={{ $('Items Split').item.json.hosts[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "17420ed0-83cd-402f-8aa7-54f23df1a9e5",
+              "name": "Host ID",
+              "value": "={{ $('Items Split').item.json.hosts[0].hostid }}",
+              "type": "string"
+            },
+            {
+              "id": "2cc94ff9-7356-4984-9d8e-999de1b6d4f0",
+              "name": "Host Proxy ID",
+              "value": "={{ $('Items Split').item.json.hosts[0].proxyid }}",
+              "type": "string"
+            },
+            {
+              "id": "a8a3498f-1253-4c2c-907f-e26d02ebf171",
+              "name": "=Host Status",
+              "value": "={{ ({\n  0: 'Enabled',\n  1: 'Disabled',\n})[ Number($('Items Split').item.json.hosts[0].status) ] || 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "d4e54088-0ced-453f-a6d4-059c38ce9893",
+              "name": "Host Tags",
+              "value": "={{\n  (() => {\n    // Read tags from the specific path you provided\n    const tags = $('Hosts Split')?.item?.json?.tags ?? [];\n\n    // Case A: Array of objects (most common in Zabbix: [{ tag, value }, ...])\n    if (Array.isArray(tags)) {\n      return tags\n        .map(h => {\n          // Support multiple key conventions\n          const name = h?.name ?? h?.tag ?? h?.key ?? '';\n          const value = h?.value ?? h?.val ?? '';\n          if (!name && !value) return null;       // skip fully empty entries\n          // If you want to hide empty values, replace with: return value ? `▪ ${name}: ${value}` : `▪ ${name}`;\n          return `▪ ${name}: ${value}`;\n        })\n        .filter(Boolean)\n        .join('\\n');\n    }\n\n    // Case B: Plain object (key/value map)\n    if (tags && typeof tags === 'object') {\n      return Object.entries(tags)\n        .map(([k, v]) => `▪ ${k}: ${v ?? ''}`)\n        .join('\\n');\n    }\n\n    // Fallback\n    return '';\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "0abe103c-7925-4f38-9a65-e5b43fa31502",
+              "name": "➜",
+              "value": "➜",
+              "type": "string"
+            },
+            {
+              "id": "b7b51e6f-d591-4d99-8f92-da46fd78ea8d",
+              "name": "Monitor Name",
+              "value": "={{ $('Items Split').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "baf88839-5099-42bc-8e40-e88116dcdab6",
+              "name": "Monitor ID",
+              "value": "={{ $('Items Split').item.json.itemid }}",
+              "type": "string"
+            },
+            {
+              "id": "8ee0bc29-3f3a-4662-977a-155b03dcef9f",
+              "name": "Monitor Type",
+              "value": "={{ ({\n  0: 'Zabbix agent',\n  2: 'Zabbix trapper',\n  3: 'Simple check',\n  5: 'Zabbix internal',\n  7: 'Zabbix agent (active)',\n  9: 'Web item',\n  10: 'External check',\n  11: 'Database monitor',\n  12: 'IPMI agent',\n  13: 'SSH agent',\n  14: 'TELNET agent',\n  15: 'Calculated',\n  16: 'JMX agent',\n  17: 'SNMP trap',\n  18: 'Dependent item',\n  19: 'HTTP agent',\n  20: 'SNMP agent',\n  21: 'Script',\n  22: 'Browser'\n})[ Number($('Items Split').item.json.type) ] || 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "875964db-7f01-4b07-bf1b-42d717c5cfad",
+              "name": "Monitor Key",
+              "value": "={{ $('Items Split').item.json.key_ }}",
+              "type": "string"
+            },
+            {
+              "id": "2ce39c84-438e-40df-8d82-47e2a2ed87ee",
+              "name": "Monitor Update Interval",
+              "value": "={{ $('Items Split').item.json.delay }}",
+              "type": "string"
+            },
+            {
+              "id": "bdc7fa11-58bb-408c-866f-1b61bb95d94a",
+              "name": "Monitor Value Type",
+              "value": "={{ ({\n  0: 'numeric float',\n  1: 'character',\n  2: 'log',\n  3: 'numeric unsigned',\n  4: 'text',\n  5: 'binary'\n})[ Number($('Items Split').item.json.value_type)] || 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "845a1f23-1060-4f6e-8775-f5ec04a804ab",
+              "name": "Monitor Username Macro",
+              "value": "={{ $('Items Split').item.json.username }}",
+              "type": "string"
+            },
+            {
+              "id": "3cc37821-7c20-4e9f-b6a5-e08ef4149cc0",
+              "name": "Monitor Password Macro",
+              "value": "={{ $('Items Split').item.json.password }}",
+              "type": "string"
+            },
+            {
+              "id": "95fdbfe5-d22c-497c-8f01-ecee56406d8a",
+              "name": "Monitor Parameters",
+              "value": "={{ $('Items Split').item.json.params }}",
+              "type": "string"
+            },
+            {
+              "id": "f9d67318-aa11-4ab2-8e90-ccc4a6d97f83",
+              "name": "Monitor Status",
+              "value": "={{ ({\n  0: 'Enabled',\n  1: 'Disabled',\n})[ Number($('Items Split').item.json.status) ] || 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "6cbec63c-85f6-4164-8b19-0dd329b04e7b",
+              "name": "Monitor Last Value",
+              "value": "={{ $('Items Split').item.json.lastvalue }}",
+              "type": "string"
+            },
+            {
+              "id": "434dc9ab-734b-45c1-914c-269e2ed205e7",
+              "name": "Monitor Tags",
+              "value": "={{\n  (() => {\n    // Read tags from the new path you requested\n    const tags = $('Items Split')?.item?.json?.tags ?? [];\n\n    // Case A: Array of objects (Zabbix style: [{ tag, value }, ...])\n    if (Array.isArray(tags)) {\n      return tags\n        .map(h => {\n          // Support multiple key conventions: tag/name/key\n          const name = h?.name ?? h?.tag ?? h?.key ?? '';\n          const value = h?.value ?? h?.val ?? '';\n          if (!name && !value) return null;   // skip empty entries\n          return `▪ ${name}: ${value}`;\n        })\n        .filter(Boolean)\n        .join('\\n');\n    }\n\n    // Case B: Plain object (key/value map)\n    if (tags && typeof tags === 'object') {\n      return Object.entries(tags)\n        .map(([k, v]) => `▪ ${k}: ${v ?? ''}`)\n        .join('\\n');\n    }\n\n    // Fallback\n    return '';\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "9176354e-a04b-4f33-b694-226cef77a213",
+              "name": "➜➜",
+              "value": "➜➜",
+              "type": "string"
+            },
+            {
+              "id": "272a9909-df17-4e28-bfdb-4c6a8912eef9",
+              "name": "Monitor Triggers",
+              "value": "={{\n  (() => {\n    // Optional: Zabbix-style priority/severity labels\n    const SEV = {\n      0: 'Not classified',\n      1: 'Information',\n      2: 'Warning',\n      3: 'Minor',\n      4: 'Major',\n      5: 'Critical'\n    };\n\n    // Required: status mapping\n    const STATUS = {\n      0: 'Enabled',\n      1: 'Disabled'\n    };\n\n    const arr = Array.isArray($json.result) ? $json.result : [];\n\n    return arr.map((t, i) => {\n      const pr = t.priority;\n      const prText = (pr ?? '') !== '' && pr in SEV ? `${SEV[pr]}` : (pr ?? '');\n      const st = t.status;\n      const stText = (st ?? '') !== '' && st in STATUS ? `${STATUS[st]}` : (st ?? '');\n\n      // ---- Tags handling ----\n      // Zabbix typically returns tags per trigger as: [{ tag: 'DOMAIN', value: 'host1.example.com' }, ...]\n      const tagsArray = Array.isArray(t.tags) ? t.tags : [];\n      const tagsLines = tagsArray\n        .map(obj => {\n          const name = obj?.tag ?? '';\n          const val = obj?.value ?? '';\n          if (!name && !val) return null;\n          // If value is empty, just show the tag name; else show \"name: value\"\n          return val === '' ? `${name}` : `${name}: ${val}`;\n        })\n        .filter(Boolean);\n\n      const tagsText = tagsLines.length\n        ? `\\nTags:\\n  - ${tagsLines.join('\\n  - ')}`\n        : `\\nTags: —`;\n\n      return `${i + 1}. \nTrigger ID: ${t.triggerid ?? ''}\nDescription: ${t.description ?? ''}\nExpression: ${t.expression ?? ''}\nSeverity: ${prText}\nComments: ${t.comments ?? ''}\nStatus: ${stText}${tagsText}`;\n    }).join('\\n\\n---------------------\\n\\n');\n  })()\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        32
+      ],
+      "id": "f5a40b36-ba4c-4299-9c1e-4766dfbaedb8",
+      "name": "Update Column Name",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "fromEmail": "zabbix-admin@example.com",
+        "toEmail": "={{ $('Parent Workflow').item.json['Email ID to send items list'] }},zabbix-admin@example.com",
+        "subject": "={{ $workflow.name }} ({{ $workflow.id }}) [ {{ $('Parent Workflow').item.json['Application Name'] }} ]",
+        "html": "={{ $workflow.name }} for the application '{{ $('Parent Workflow').item.json['Application Name'] }}'",
+        "options": {
+          "appendAttribution": false,
+          "attachments": "data"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        496,
+        32
+      ],
+      "id": "5621e8f4-cc17-4d91-bd64-b173cf322fb1",
+      "name": "Send email",
+      "webhookId": "c7c3825a-d8cd-4676-b00e-4c7d103568ee",
+      "credentials": {
+        "smtp": {
+          "id": "hlptozjprdl23nBh",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5ace7960-9f07-4c3a-881c-4b85fa469108",
+              "name": "triggers",
+              "value": "={{ Array.isArray($json.triggers) ? $json.triggers.map(t => t.triggerid).filter(Boolean) : [] }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        32
+      ],
+      "id": "68eb8d75-8b4a-4820-abb0-c13692eaa841",
+      "name": "Item Triggers"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        32
+      ],
+      "id": "a70d781e-8f5b-47da-a244-c0e07e862ccf",
+      "name": "Items Split"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"trigger.get\",\n    \"params\": {\n      \"triggerids\": [{{ $json.triggers }}],\n      \"output\": [\"description\",\"expression\",\"priority\",\"comments\",\"status\"],\n      \"selectTags\": \"extend\",\n      \"expandExpression\": true\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -176,
+        32
+      ],
+      "id": "de915476-2d77-462b-b1ee-28df01166a33",
+      "name": "Trigger Expression",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "compression": true,
+          "fileName": "={{ $('Parent Workflow').item.json['Application Name'] }}.xlsx",
+          "headerRow": true,
+          "sheetName": "Items"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        32
+      ],
+      "id": "f66ea852-6308-4627-9378-02678d6ea396",
+      "name": "Convert to Excel File"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1744,
+        32
+      ],
+      "id": "473c3320-7e99-4cd0-8dcd-c42beafe788c",
+      "name": "Parent Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\n// Input: items with item.json['Application Name']\n// Output: unique items per input item by `value`, each: { combination, value }\n\nfunction toLower(s) {\n  return s.toLowerCase();\n}\nfunction toUpper(s) {\n  return s.toUpperCase();\n}\nfunction toTitle(s) {\n  return s\n    .toLowerCase()\n    .replace(\n      /(^|[^\\p{L}\\p{N}]+)(\\p{L})/gu,\n      (_, p1, p2) => p1 + p2.toUpperCase()\n    );\n}\nfunction toSentence(s) {\n  const lowered = s.toLowerCase();\n  return lowered.replace(/(\\p{L})/u, c => c.toUpperCase());\n}\nfunction pick(mode) {\n  switch ((mode || '').toLowerCase()) {\n    case 'lower': return toLower;\n    case 'upper': return toUpper;\n    case 'title': return toTitle;\n    case 'sentence': return toSentence;\n    default: return s => s;\n  }\n}\n\nconst bracketRe = /(\\([^)]*\\)|\\[[^\\]]*\\]|\\{[^}]*\\})/g;\n\nfunction transform(text, outsideMode, insideMode) {\n  const outsideFn = pick(outsideMode);\n  const insideFn  = pick(insideMode);\n\n  return String(text)\n    .split(bracketRe)\n    .map(part => {\n      if (!part) return part;\n      const first = part[0];\n      const last  = part[part.length - 1];\n      const isBracketed =\n        (first === '(' && last === ')') ||\n        (first === '[' && last === ']') ||\n        (first === '{' && last === '}');\n\n      if (isBracketed) {\n        const inner = part.slice(1, -1);\n        return first + insideFn(inner) + last;\n      }\n      return outsideFn(part);\n    })\n    .join('');\n}\n\nconst modes = ['lower', 'upper', 'title', 'sentence'];\nconst out = [];\n\nitems.forEach((item, idx) => {\n  const text = (item.json['Application Name']) ?? '';\n\n  // Track unique transformed values per incoming item\n  const seen = new Set();\n\n  for (const outside of modes) {\n    for (const inside of modes) {\n      const value = transform(text, outside, inside);\n      if (seen.has(value)) {\n        // Skip duplicates\n        continue;\n      }\n      seen.add(value);\n\n      out.push({\n        json: {\n          ...item.json,\n          combination: `${outside}-${inside}`,\n          value,\n        },\n        pairedItem: { item: idx },\n      });\n    }\n  }\n});\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        32
+      ],
+      "id": "0d3471ee-8f08-420c-a732-7d33424cafe4",
+      "name": "Generate Application Name Combinations"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        32
+      ],
+      "id": "0f4d651c-14c1-4f0f-bb67-0dae38831a24",
+      "name": "Hosts Split"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Host Get": {
+      "main": [
+        [
+          {
+            "node": "Hosts Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Items Get": {
+      "main": [
+        [
+          {
+            "node": "Items Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Column Name": {
+      "main": [
+        [
+          {
+            "node": "Convert to Excel File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Triggers": {
+      "main": [
+        [
+          {
+            "node": "Trigger Expression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Items Split": {
+      "main": [
+        [
+          {
+            "node": "Item Triggers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Expression": {
+      "main": [
+        [
+          {
+            "node": "Update Column Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Excel File": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parent Workflow": {
+      "main": [
+        [
+          {
+            "node": "Generate Application Name Combinations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Application Name Combinations": {
+      "main": [
+        [
+          {
+            "node": "Host Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hosts Split": {
+      "main": [
+        [
+          {
+            "node": "Items Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "07034d25-078a-4041-bbd4-cc4455eb1cc1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f9b7d8392fb9b22e1572f122d2199da1a316578c69792bb5ebd6447fbba818b"
+  },
+  "id": "8ll20oXUS1mvRiXT",
+  "tags": []
+}

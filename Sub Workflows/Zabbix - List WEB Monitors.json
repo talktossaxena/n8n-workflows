@@ -1,0 +1,585 @@
+{
+  "name": "Zabbix - List WEB Monitors",
+  "nodes": [
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"host.get\",\n    \"params\": {\n      \"output\": [\"hostid\",\"host\",\"name\"],\n      \"selectTags\": \"extend\",\n      \"tags\": [\n        {\n          \"tag\": \"APP\",\n          \"value\": \"{{ $json.value }}\",\n          \"operator\": 1\n\t}\n      ]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1296,
+        -400
+      ],
+      "id": "aa8859a8-5430-4aff-91ed-fd9010c4ef3b",
+      "name": "Host Get",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd101a20-7b4d-4617-8ffd-5b6a933cb6a1",
+              "name": "Host Name",
+              "value": "={{ $('HTTPTESTs Split').item.json.hosts[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "17420ed0-83cd-402f-8aa7-54f23df1a9e5",
+              "name": "Host ID",
+              "value": "={{ $('HTTPTESTs Split').item.json.hosts[0].hostid }}",
+              "type": "string"
+            },
+            {
+              "id": "2cc94ff9-7356-4984-9d8e-999de1b6d4f0",
+              "name": "Host Proxy ID",
+              "value": "={{ $('HTTPTESTs Split').item.json.hosts[0].proxyid }}",
+              "type": "string"
+            },
+            {
+              "id": "a8a3498f-1253-4c2c-907f-e26d02ebf171",
+              "name": "=Host Status",
+              "value": "={{ ({\n  0: 'Enabled',\n  1: 'Disabled',\n})[ Number($('HTTPTESTs Split').item.json.hosts[0].status) ] || 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "4fa52374-b5d8-4255-b261-ac1e7ec2a258",
+              "name": "Host Tags",
+              "value": "={{\n  (() => {\n    // Read tags from the specific path you provided\n    const tags = $('Hosts Split')?.item?.json?.tags ?? [];\n\n    // Case A: Array of objects (most common in Zabbix: [{ tag, value }, ...])\n    if (Array.isArray(tags)) {\n      return tags\n        .map(h => {\n          // Support multiple key conventions\n          const name = h?.name ?? h?.tag ?? h?.key ?? '';\n          const value = h?.value ?? h?.val ?? '';\n          if (!name && !value) return null;       // skip fully empty entries\n          // If you want to hide empty values, replace with: return value ? `▪ ${name}: ${value}` : `▪ ${name}`;\n          return `▪ ${name}: ${value}`;\n        })\n        .filter(Boolean)\n        .join('\\n');\n    }\n\n    // Case B: Plain object (key/value map)\n    if (tags && typeof tags === 'object') {\n      return Object.entries(tags)\n        .map(([k, v]) => `▪ ${k}: ${v ?? ''}`)\n        .join('\\n');\n    }\n\n    // Fallback\n    return '';\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "0abe103c-7925-4f38-9a65-e5b43fa31502",
+              "name": "➜",
+              "value": "➜",
+              "type": "string"
+            },
+            {
+              "id": "b7b51e6f-d591-4d99-8f92-da46fd78ea8d",
+              "name": "WEB Monitor Name",
+              "value": "={{ $('HTTPTESTs Split').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "baf88839-5099-42bc-8e40-e88116dcdab6",
+              "name": "WEB Monitor ID",
+              "value": "={{ $('HTTPTESTs Split').item.json.httptestid }}",
+              "type": "string"
+            },
+            {
+              "id": "2ce39c84-438e-40df-8d82-47e2a2ed87ee",
+              "name": "WEB Monitor Update Interval",
+              "value": "={{ $('HTTPTESTs Split').item.json.delay }}",
+              "type": "string"
+            },
+            {
+              "id": "0cf1c9cb-2e46-45e9-9ebc-14233001acd2",
+              "name": "WEB Monitor Agent",
+              "value": "={{ $('HTTPTESTs Split').item.json.agent }}",
+              "type": "string"
+            },
+            {
+              "id": "f504c649-6c1f-4be2-83df-983b0a46dca9",
+              "name": "WEB Monitor Retries",
+              "value": "={{ $('HTTPTESTs Split').item.json.retries }}",
+              "type": "string"
+            },
+            {
+              "id": "369c1e5d-2708-42a3-9879-d5e55a2fcd5a",
+              "name": "WEB Monitor Headers",
+              "value": "={{\n  (() => {\n    // Pull headers safely from the requested JSON path\n    const headers =\n      $('HTTPTESTs Split')?.item?.json?.headers ??\n      $json.headers ??\n      $json.item?.json?.headers ??\n      $json['Web Monitor Headers'] ??\n      [];\n\n    // Case A: Array of objects with `name` and `value`\n    if (Array.isArray(headers)) {\n      return headers\n        .map(h => {\n          const name = h?.name ?? h?.header ?? h?.key ?? '';\n          const value = h?.value ?? h?.val ?? '';\n          return `▪ ${name}: ${value}`;\n        })\n        .join('\\n');\n    }\n\n    // Case B: Plain object (key/value)\n    if (headers && typeof headers === 'object') {\n      return Object.entries(headers)\n        .map(([k, v]) => `▪ ${k}: ${v ?? ''}`)\n        .join('\\n');\n    }\n\n    // Fallback\n    return '';\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "5319bb34-a0bd-46a8-a180-c4e3331a7032",
+              "name": "WEB Monitor Variables",
+              "value": "={{\n  (() => {\n    // Adjust the path as needed for your workflow\n    const vars =\n      $('HTTPTESTs Split').item.json.variables ??\n      $json.item?.json?.variables ??\n      $json['Web Monitor Variables'] ??\n      [];\n\n    // Case A: Array of objects with `name` & `value`\n    if (Array.isArray(vars)) {\n      return vars.map((v, i) => {\n        const name = v?.name ?? v?.key ?? '';\n        const value = v?.value ?? v?.val ?? '';\n        return `▪ ${name}: ${value}`;\n      }).join('\\n');\n    }\n\n    // Case B: Plain object (key/value)\n    if (vars && typeof vars === 'object') {\n      return Object.entries(vars).map(([k, v], i) => {\n        return `▪ ${k}: ${v ?? ''}`;\n      }).join('\\n');\n    }\n\n    // Fallback\n    return '';\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "f9d67318-aa11-4ab2-8e90-ccc4a6d97f83",
+              "name": "WEB Monitor Status",
+              "value": "={{ ({\n  0: 'Enabled',\n  1: 'Disabled',\n})[ Number($('HTTPTESTs Split').item.json.status) ] || 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "0d811f30-bc29-4d51-a568-9c57e1ea66d2",
+              "name": "WEB Monitor Last Value",
+              "value": "={{ $('Items Get').item.json.result[0].lastvalue }}",
+              "type": "string"
+            },
+            {
+              "id": "f5afbc7f-3cb5-498c-b31d-ae5500ab6219",
+              "name": "WEB Monitor Tags",
+              "value": "={{\n  (() => {\n    // Pull tags safely\n    const tags = $('HTTPTESTs Split').item.json.tags ?? $json.item?.json?.tags ?? $json['Web Monitor Tags'] ?? [];\n\n    // Case A: Array of objects with `name` and `value`\n    if (Array.isArray(tags)) {\n      return tags.map((h, i) => {\n        const name = h?.name ?? h?.tag ?? h?.key ?? '';\n        const value = h?.value ?? h?.val ?? '';\n        return `▪ ${name}: ${value}`;\n      }).join('\\n');\n    }\n\n    // Case B: Plain object (key/value)\n    if (tags && typeof tags === 'object') {\n      const entries = Object.entries(tags);\n      return entries.map(([k, v], i) => {\n        return `▪ ${k}: ${v ?? ''}`;\n      }).join('\\n');\n    }\n\n    // Fallback\n    return '';\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "9176354e-a04b-4f33-b694-226cef77a213",
+              "name": "➜➜",
+              "value": "➜➜",
+              "type": "string"
+            },
+            {
+              "id": "2f2c4322-e86e-4171-a50e-f8ef31e63509",
+              "name": "WEB Steps",
+              "value": "={{\n(function () {\n  // Read steps from the requested path\n  var steps = Array.isArray($('HTTPTESTs Split')?.item?.json?.steps)\n    ? $('HTTPTESTs Split').item.json.steps\n    : [];\n\n  function toStr(v) {\n    return (v === null || v === undefined) ? '—' : String(v);\n  }\n\n  // Build bullet lines: \"- name: value\"\n  function mapPairsBullets(arr) {\n    if (!Array.isArray(arr) || arr.length === 0) return '—';\n    return arr.map(function (o) {\n      var name = (o && (o.name !== undefined && o.name !== null)) ? o.name\n                : (o && (o.key !== undefined && o.key !== null)) ? o.key\n                : 'name';\n      var value = o ? o.value : undefined;\n      return '- ' + toStr(name) + ': ' + toStr(value);\n    }).join('\\n');\n  }\n\n  // Remove any leading spaces (incl. non-breaking) ONLY from the first line of a block\n  function ltrimFirstLine(block) {\n    if (block === '—' || typeof block !== 'string') return block;\n    var lines = block.split('\\n');\n    if (!lines.length) return block;\n    lines[0] = lines[0].replace(/^[\\s\\u00A0]+/, ''); // trim normal + NBSP\n    return lines.join('\\n');\n  }\n\n  function postTypeLabel(t) {\n    return (Number(t) === 1) ? 'Form Data' : 'Raw Data';\n  }\n\n  function stringifyStatusCodes(sc) {\n    if (Array.isArray(sc)) return sc.join(', ');\n    if (typeof sc === 'string' || typeof sc === 'number') return String(sc);\n    return '—';\n  }\n\n  return steps.map(function (s, idx) {\n    var serial = idx + 1;\n\n    var stepNo = (s && s.no !== undefined) ? s.no\n               : (s && s.stepno !== undefined) ? s.stepno\n               : (s && s.stepNo !== undefined) ? s.stepNo\n               : '—';\n\n    var stepId = (s && s.httpstepid !== undefined) ? s.httpstepid\n               : (s && s.stepid !== undefined) ? s.stepid\n               : (s && s.id !== undefined) ? s.id\n               : '—';\n\n    var name = (s && s.name !== undefined) ? s.name : '—';\n    var url = (s && s.url !== undefined) ? s.url : '—';\n    var timeout = (s && s.timeout !== undefined) ? s.timeout : '—';\n    var followRedirects = (s && s.follow_redirects !== undefined) ? s.follow_redirects\n                         : (s && s.followRedirects !== undefined) ? s.followRedirects\n                         : '—';\n    var searchString = (s && s.required !== undefined) ? s.required\n                      : (s && s.search_string !== undefined) ? s.search_string\n                      : '—';\n    var statusCodes = stringifyStatusCodes(s ? s.status_codes : undefined);\n    var postType = Number((s && s.post_type !== undefined) ? s.post_type : 0);\n\n    // POSTS (as bullets) + left-trim first line\n    var postsBlock = '—';\n    if (postType === 0) {\n      // Raw data\n      if (s && typeof s.posts === 'string') {\n        postsBlock = s.posts || '—'; // keep raw text\n      } else if (s && Array.isArray(s.posts)) {\n        postsBlock = s.posts.length\n          ? s.posts.map(function (p) {\n              var pn = p ? p.name : undefined;\n              var pv = p ? p.value : undefined;\n              return '- ' + toStr(pn) + ': ' + toStr(pv);\n            }).join('\\n')\n          : '—';\n      } else if (s && s.posts && typeof s.posts === 'object') {\n        var entries = Object.keys(s.posts).map(function (k) { return [k, s.posts[k]]; });\n        postsBlock = entries.length\n          ? entries.map(function (kv) { return '- ' + kv[0] + ': ' + toStr(kv[1]); }).join('\\n')\n          : '—';\n      }\n    } else if (postType === 1) {\n      // Form data\n      postsBlock = mapPairsBullets(s ? s.posts : undefined);\n    }\n    postsBlock = ltrimFirstLine(postsBlock);\n\n    // HEADERS / VARIABLES / QUERY FIELDS (bullets) + left-trim first line\n    var headers = mapPairsBullets(s ? s.headers : undefined);\n    headers = ltrimFirstLine(headers);\n\n    var variables = mapPairsBullets(s ? s.variables : undefined);\n    variables = ltrimFirstLine(variables);\n\n    var qfSrc = (s && s.query_fields !== undefined) ? s.query_fields\n              : (s && s.queryFields !== undefined) ? s.queryFields\n              : undefined;\n    var queryFields = mapPairsBullets(qfSrc);\n    queryFields = ltrimFirstLine(queryFields);\n\n    return [\n      serial + '.',\n      'Step Number: ' + toStr(stepNo),\n      'Step ID: ' + toStr(stepId),\n      'Step Name: ' + toStr(name),\n      'Step URL: ' + toStr(url),\n      'Timeout: ' + toStr(timeout),\n      'Follow Redirects: ' + toStr(followRedirects),\n      'Search String: ' + toStr(searchString),\n      'Status Codes: ' + toStr(statusCodes),\n      'Post Type: ' + postTypeLabel(postType),\n      'Posts:\\n' + postsBlock,\n      'Headers:\\n' + headers,\n      'Variables:\\n' + variables,\n      'Query Fields:\\n' + queryFields\n    ].join('\\n');\n  }).join('\\n\\n---------------------\\n\\n');\n})()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "89134798-b500-4bce-8ad6-307e0aa49522",
+              "name": "➜➜➜",
+              "value": "➜➜➜",
+              "type": "string"
+            },
+            {
+              "id": "a5e34ad9-d302-4d67-8a8e-4b6f8ea85af3",
+              "name": "WEB Triggers",
+              "value": "={{\n  (() => {\n    // Optional: Zabbix-style priority/severity labels\n    const SEV = {\n      0: 'Not classified',\n      1: 'Information',\n      2: 'Warning',\n      3: 'Minor',\n      4: 'Major',\n      5: 'Critical'\n    };\n\n    // Required: status mapping\n    const STATUS = {\n      0: 'Enabled',\n      1: 'Disabled'\n    };\n\n    const arr = Array.isArray($json.result) ? $json.result : [];\n\n    return arr.map((t, i) => {\n      const pr = t.priority;\n      const prText = (pr ?? '') !== '' && pr in SEV ? `${SEV[pr]}` : (pr ?? '');\n      const st = t.status;\n      const stText = (st ?? '') !== '' && st in STATUS ? `${STATUS[st]}` : (st ?? '');\n\n      // ---- Tags handling ----\n      // Zabbix typically returns tags per trigger as: [{ tag: 'DOMAIN', value: 'host1.example.com' }, ...]\n      const tagsArray = Array.isArray(t.tags) ? t.tags : [];\n      const tagsLines = tagsArray\n        .map(obj => {\n          const name = obj?.tag ?? '';\n          const val = obj?.value ?? '';\n          if (!name && !val) return null;\n          // If value is empty, just show the tag name; else show \"name: value\"\n          return val === '' ? `${name}` : `${name}: ${val}`;\n        })\n        .filter(Boolean);\n\n      const tagsText = tagsLines.length\n        ? `\\nTags:\\n  - ${tagsLines.join('\\n  - ')}`\n        : `\\nTags: —`;\n\n      return `${i + 1}. \nTrigger ID: ${t.triggerid ?? ''}\nDescription: ${t.description ?? ''}\nExpression: ${t.expression ?? ''}\nSeverity: ${prText}\nComments: ${t.comments ?? ''}\nStatus: ${stText}${tagsText}`;\n    }).join('\\n\\n---------------------\\n\\n');\n  })()\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        -400
+      ],
+      "id": "3792e1b1-d598-431a-8f77-5ddbf16430a2",
+      "name": "Update Column Name",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "fromEmail": "zabbix-admin@example.com",
+        "toEmail": "={{ $('Parent Workflow').item.json['Email ID to send items list'] }},zabbix-admin@example.com",
+        "subject": "={{ $workflow.name }} ({{ $workflow.id }}) [ {{ $('Parent Workflow').item.json['Application Name'] }} ]",
+        "html": "={{ $workflow.name }} for the application '{{ $('Parent Workflow').item.json['Application Name'] }}'",
+        "options": {
+          "appendAttribution": false,
+          "attachments": "data"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        -400
+      ],
+      "id": "f1274357-1141-46a1-b352-dd4eb4382f68",
+      "name": "Send email",
+      "webhookId": "3673c67a-3f38-4f89-9bcd-696f94343ce4",
+      "credentials": {
+        "smtp": {
+          "id": "hlptozjprdl23nBh",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1744,
+        -400
+      ],
+      "id": "f6287224-acb5-457e-ae59-6792dc74c202",
+      "name": "Parent Workflow"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"httptest.get\",\n  \"params\": {\n    \"hostids\": \"{{ $json.hostid }}\",\n    \"output\": [\"name\",\"httptestid\",\"delay\",\"agent\",\"retries\",\"headers\",\"variables\",\"status\"],\n    \"selectSteps\": [\"name\",\"httpstepid\",\"no\",\"url\",\"timeout\",\"required\",\"status_codes\",\"follow_redirects\",\"headers\",\"variables\",\"query_fields\",\"post_type\",\"posts\"],\n    \"selectTags\": \"extend\",\n    \"selectHosts\": [\"hostid\",\"name\",\"proxyid\",\"status\"]\n  },\n  \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -848,
+        -400
+      ],
+      "id": "80e6bbcc-ad08-44da-b515-36a52381def0",
+      "name": "HTTPTESTs Get",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -400
+      ],
+      "id": "a1c5bdd5-9e1c-4673-abad-35b228eadcce",
+      "name": "HTTPTESTs Split"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "compression": true,
+          "fileName": "={{ $('Parent Workflow').item.json['Application Name'] }}.xlsx",
+          "headerRow": true,
+          "sheetName": "Items"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        -400
+      ],
+      "id": "06143f01-debe-46c4-9f94-44ba78de478f",
+      "name": "Convert to Excel File"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -400
+      ],
+      "id": "d8089e74-e479-4486-9383-588f795b8b38",
+      "name": "Hosts Split"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"item.get\",\n    \"params\": {\n        \"hostids\": \"{{ $('Hosts Split').item.json.hostid }}\", \n        \"output\": [\"itemid\",\"key_\",\"value_type\",\"lastvalue\"],\n        \"selectTriggers\": [\"triggerid\"],\n        \"webitems\": true,\n        \"search\": {\n            \"key_\": \"web.test.fail[{{ $json.name }}]\"\n        },\n        \"searchWildcardsEnabled\": false\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -400,
+        -400
+      ],
+      "id": "307f6488-a25e-47d2-9655-b4ecaeff7234",
+      "name": "Items Get",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5ace7960-9f07-4c3a-881c-4b85fa469108",
+              "name": "triggers",
+              "value": "={{ Array.isArray($json.result[0].triggers) ? $json.result[0].triggers.map(t => t.triggerid).filter(Boolean) : [] }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        -400
+      ],
+      "id": "0458f5cd-7161-4ae5-b07a-a6c5e5535467",
+      "name": "Item Triggers"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"trigger.get\",\n    \"params\": {\n      \"triggerids\": [{{ $json.triggers }}],\n      \"output\": [\"description\",\"expression\",\"priority\",\"comments\",\"status\"],\n      \"selectTags\": \"extend\",\n      \"expandExpression\": true\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        48,
+        -400
+      ],
+      "id": "6846d7de-6e5f-4298-8c04-2890a011ca02",
+      "name": "Trigger Expression",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\n// Input: items with item.json['Application Name']\n// Output: unique items per input item by `value`, each: { combination, value }\n\nfunction toLower(s) {\n  return s.toLowerCase();\n}\nfunction toUpper(s) {\n  return s.toUpperCase();\n}\nfunction toTitle(s) {\n  return s\n    .toLowerCase()\n    .replace(\n      /(^|[^\\p{L}\\p{N}]+)(\\p{L})/gu,\n      (_, p1, p2) => p1 + p2.toUpperCase()\n    );\n}\nfunction toSentence(s) {\n  const lowered = s.toLowerCase();\n  return lowered.replace(/(\\p{L})/u, c => c.toUpperCase());\n}\nfunction pick(mode) {\n  switch ((mode || '').toLowerCase()) {\n    case 'lower': return toLower;\n    case 'upper': return toUpper;\n    case 'title': return toTitle;\n    case 'sentence': return toSentence;\n    default: return s => s;\n  }\n}\n\nconst bracketRe = /(\\([^)]*\\)|\\[[^\\]]*\\]|\\{[^}]*\\})/g;\n\nfunction transform(text, outsideMode, insideMode) {\n  const outsideFn = pick(outsideMode);\n  const insideFn  = pick(insideMode);\n\n  return String(text)\n    .split(bracketRe)\n    .map(part => {\n      if (!part) return part;\n      const first = part[0];\n      const last  = part[part.length - 1];\n      const isBracketed =\n        (first === '(' && last === ')') ||\n        (first === '[' && last === ']') ||\n        (first === '{' && last === '}');\n\n      if (isBracketed) {\n        const inner = part.slice(1, -1);\n        return first + insideFn(inner) + last;\n      }\n      return outsideFn(part);\n    })\n    .join('');\n}\n\nconst modes = ['lower', 'upper', 'title', 'sentence'];\nconst out = [];\n\nitems.forEach((item, idx) => {\n  const text = (item.json['Application Name']) ?? '';\n\n  // Track unique transformed values per incoming item\n  const seen = new Set();\n\n  for (const outside of modes) {\n    for (const inside of modes) {\n      const value = transform(text, outside, inside);\n      if (seen.has(value)) {\n        // Skip duplicates\n        continue;\n      }\n      seen.add(value);\n\n      out.push({\n        json: {\n          ...item.json,\n          combination: `${outside}-${inside}`,\n          value,\n        },\n        pairedItem: { item: idx },\n      });\n    }\n  }\n});\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        -400
+      ],
+      "id": "fc83cb75-e9e4-494b-a444-82a7ba25cd55",
+      "name": "Generate Application Name Combinations"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Host Get": {
+      "main": [
+        [
+          {
+            "node": "Hosts Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Column Name": {
+      "main": [
+        [
+          {
+            "node": "Convert to Excel File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parent Workflow": {
+      "main": [
+        [
+          {
+            "node": "Generate Application Name Combinations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTPTESTs Get": {
+      "main": [
+        [
+          {
+            "node": "HTTPTESTs Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTPTESTs Split": {
+      "main": [
+        [
+          {
+            "node": "Items Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Excel File": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hosts Split": {
+      "main": [
+        [
+          {
+            "node": "HTTPTESTs Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Items Get": {
+      "main": [
+        [
+          {
+            "node": "Item Triggers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Triggers": {
+      "main": [
+        [
+          {
+            "node": "Trigger Expression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Expression": {
+      "main": [
+        [
+          {
+            "node": "Update Column Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Application Name Combinations": {
+      "main": [
+        [
+          {
+            "node": "Host Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0bfecf59-7f3c-4dcc-be28-8fe1b77b922a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f9b7d8392fb9b22e1572f122d2199da1a316578c69792bb5ebd6447fbba818b"
+  },
+  "id": "171V6VKgPBI2jIYJ",
+  "tags": []
+}

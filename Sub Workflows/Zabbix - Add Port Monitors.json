@@ -1,0 +1,1309 @@
+{
+  "name": "Zabbix - Add Port Monitors",
+  "nodes": [
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"templategroup.create\",\n    \"params\": {\n        \"name\": \"PORT/{{ $('Parent Workflow').item.json['Application Alias Name'] }}\"\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -5776,
+        -2032
+      ],
+      "id": "57725d4c-4606-4e38-be0c-16e5fbac165e",
+      "name": "Create Template Group",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"jsonrpc\": \"2.0\",\n\t\"method\": \"hostgroup.create\",\n\t\"params\": {\n\t\t\"name\": \"PORT/{{ $('Parent Workflow').item.json['Application Alias Name'] }}\"\n\t},\n\t\"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -5552,
+        -2032
+      ],
+      "id": "2eb29c76-59d3-47a0-9f60-fb6486f37385",
+      "name": "Create Host Group",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"hostgroup.get\",\n    \"params\": {\n      \"filter\": { \"name\": \"PORT/{{ $('Parent Workflow').item.json['Application Alias Name'] }}\" },\n      \"output\": [ \"groupid\", \"name\" ]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4880,
+        -2032
+      ],
+      "id": "c5803a79-6fcd-4200-a563-99b4e1a68a82",
+      "name": "Host Group ID",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"templategroup.get\",\n    \"params\": {\n      \"filter\": { \"name\": \"PORT/{{ $('Parent Workflow').item.json['Application Alias Name'] }}\" },\n      \"output\": [ \"groupid\", \"name\" ]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -5104,
+        -2032
+      ],
+      "id": "9c56ddc2-f8a6-4545-9d27-8b69caeb7963",
+      "name": "Template Group ID",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"template.get\",\n    \"params\": {\n      \"filter\": { \"host\": \"Example Template Port -{{ $('Exclude Special Characters').item.json.stdout }}\" },\n      \"output\": [\"templateid\", \"host\", \"name\"]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4432,
+        -2032
+      ],
+      "id": "c112e4f1-470a-4a64-a37e-f1a87f20470e",
+      "name": "Template ID",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $('Parent Workflow').item.json['fileName'] }}.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -3312,
+        -2032
+      ],
+      "id": "7ba594da-f5b3-4f6e-82f0-899c030b3bda",
+      "name": "Read CSV"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2864,
+        -2032
+      ],
+      "id": "77c3c346-d59f-4da1-af2f-08bdc78a8a6d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -7568,
+        -1720
+      ],
+      "id": "b76f9b7f-0ad5-4c77-b1ea-5a2eb601d19d",
+      "name": "Parent Workflow"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"host.get\",\n    \"params\": {\n      \"filter\": { \"host\": \"{{ $('Exclude Special Characters').item.json.stdout }}\" },\n      \"output\": [\"hostid\", \"host\", \"name\"]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -3760,
+        -2128
+      ],
+      "id": "c6334b13-99ed-4907-ab20-5999a4d3df92",
+      "name": "Host ID",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"template.create\",\n    \"params\": {\n      \"host\": \"Example Template Port -{{ $('Exclude Special Characters').item.json.stdout }}\",\n      \"name\": \"Example Template Port -{{ $('Exclude Special Characters').item.json.stdout }}\",\n      \"description\": \"{{ $('Parent Workflow').item.json['Application Name'] }}\",\n      \"groups\": [\n        { \"groupid\": \"{{ $('Template Group ID').item.json.result[0].groupid }}\" }\n      ],\n      \"tags\": [\n        { \"tag\": \"OBJECTCLASS\", \"value\": \"Port Monitoring\" },\n        { \"tag\": \"OBJECTPARAMETER\", \"value\": \"Status\" }\n      ]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4656,
+        -2032
+      ],
+      "id": "0d36b0b5-c088-4f92-bb30-ed2c4601bb40",
+      "name": "Create Template",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"host.create\",\n  \"params\": {\n    \"host\": \"{{ $('Exclude Special Characters').item.json.stdout }}\",\n    \"status\": 1,\n    \"monitored_by\": 1,\n    \"proxyid\": 30774,\n    \"interfaces\": [{\n      \"type\": 1,\n      \"main\": 1,\n      \"useip\": 1,\n      \"ip\": \"{$NON_DMZ_PROXY_IP}\",\n      \"dns\": \"\",\n      \"port\": \"10050\"\n    }],\n    \"groups\": [{ \"groupid\": \"{{ $('Host Group ID').item.json.result[0].groupid }}\" }],\n    \"templates\": [{ \"templateid\": \"{{ $json.result[0].templateid }}\" }],\n    \"tags\": [{ \"tag\": \"APP\", \"value\": \"{{ $('Parent Workflow').item.json['Application Name'] }}\" }]\n  },\n  \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4208,
+        -2032
+      ],
+      "id": "026c7f02-a2bd-435b-ac6c-5ea93c909eac",
+      "name": "Create Host",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\":\"2.0\",\n    \"method\":\"host.massadd\",\n    \"params\":{\n      \"hosts\":[{ \"hostid\": \"{{ $json.result[0].hostid }}\" }],\n      \"templates\":[{ \"templateid\": \"{{ $('Template ID').item.json.result[0].templateid }}\" }],\n      \"groups\": [{ \"groupid\": \"{{ $('Host Group ID').item.json.result[0].groupid }}\" }]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -3536,
+        -2128
+      ],
+      "id": "b2e0a68f-0a91-44c8-9f50-38a92f4252e4",
+      "name": "Update Host",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"item.create\",\n    \"params\": {\n      \"name\": \"{{ $json['Monitor Name'] }}\",\n      \"hostid\": \"{{ $('Template ID').item.json.result[0].templateid }}\",\n      \"key_\": \"net.tcp.service[tcp,{{ $json['Host FQDN'] }},{{ $json.Port }}]\",\n      \"type\": 3,\n      \"value_type\": 3,\n      \"delay\": \"{{ $json.CheckInterval }}m\",\n      \"status\": 0,\n      \"tags\": [\n        { \"tag\": \"Application\", \"value\": \"Port\" }\n      ]\n    },\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2640,
+        -2224
+      ],
+      "id": "f5b904d3-628f-43a6-af1b-61cf9b242fa0",
+      "name": "Create Item",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://zabbixmon.example.com/api_jsonrpc.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zabbixApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"trigger.create\",\n    \"params\": [{\n      \"description\": \"{{ $('Loop Over Items').item.json['Event Description'] }}\",\n      \"expression\": \"count(/{{ $('Template ID').item.json.result[0].name }}/net.tcp.service[tcp,{{ $('Loop Over Items').item.json['Host FQDN'] }},{{ $('Loop Over Items').item.json.Port }}],#{{ $('Loop Over Items').item.json.ConsecutiveChecks }},\\\"eq\\\",0)={{ $('Loop Over Items').item.json.ConsecutiveChecks }}\",\n      \"priority\": \"{{ $('Loop Over Items').item.json.Severity }}\",\n      \"status\": 1,\n      \"comments\": \"{{ $('Loop Over Items').item.json['Event Description'] }}\",\n      \"tags\": [\n        {\"tag\": \"CATEGORY\",        \"value\": \"Application\"},\n        {\"tag\": \"DOMAIN\",          \"value\": \"{{ $('Loop Over Items').item.json['Host FQDN'] }}\"},\n        {\"tag\": \"OBJECTCLASS\",     \"value\": \"Port Monitoring\"},\n        {\"tag\": \"OBJECTINSTANCE\",  \"value\": \"{{ $('Loop Over Items').item.json.Port }}\"},\n        {\"tag\": \"OBJECTPARAMETER\", \"value\": \"Status\"},\n        {\"tag\": \"TRIGGERID\",       \"value\": \"{TRIGGER.ID}\"},\n        {\"tag\": \"WORKGROUP\",       \"value\": \"{{ $('Loop Over Items').item.json.Workgroup }}\"}\n      ]\n    }],\n    \"id\": 1\n}",
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2192,
+        -2080
+      ],
+      "id": "38f52db9-9015-4712-a715-ade66f4dec76",
+      "name": "Create Trigger",
+      "extendsCredential": "zabbixApi",
+      "credentials": {
+        "zabbixApi": {
+          "id": "l9TVErFxbKff0DHk",
+          "name": "Zabbix account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "fromEmail": "zabbix-admin@example.com",
+        "toEmail": "={{ $('Parent Workflow').item.json['Email ID to send approval link'] }},zabbix-admin@example.com",
+        "subject": "=Approval Required - {{ $workflow.name }} ({{ $workflow.id }}) [ {{ $('Parent Workflow').item.json['Application Name'] }} ({{ $('Parent Workflow').item.json['Application Alias Name'] }}) ({{ $('Parent Workflow').item.json['Application ASK ID'] }}) ]",
+        "message": "={{ $('HTML Monitors list').item.json['stdout'] }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -6672,
+        -1864
+      ],
+      "id": "080d3273-c5c8-469d-9ee1-1038017ff055",
+      "name": "Email Approval",
+      "webhookId": "97cad8ea-02a5-43a9-9bb1-0c3007920050",
+      "credentials": {
+        "smtp": {
+          "id": "hlptozjprdl23nBh",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=awk -F'[|]' '\nBEGIN {\n    print \"<table border=\\\"1\\\">\"\n}\nNR==1 {\n    print \"  <thead><tr>\"\n    for (i=1; i<=NF; i++) {\n         printf \"    <th>%s</th>\\n\", $i\n    }\n    print \"  </tr></thead>\"\n    print \"  <tbody>\"\n    next\n}\n{\n    print \"  <tr>\"\n    for (i=1; i<=NF; i++) {\n         printf \"    <td>%s</td>\\n\", $i\n    }\n    print \"  </tr>\"\n}\nEND {\n    print \"  </tbody>\"\n    print \"</table>\"\n}' {{ $('Parent Workflow').item.json.fileName }}.csv"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -6896,
+        -1864
+      ],
+      "id": "6fdb4798-5208-4bdd-b649-84aaef5c454e",
+      "name": "HTML Monitors list",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "Monitor_Template_File",
+        "options": {
+          "headerRow": false
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -7344,
+        -1720
+      ],
+      "id": "17c6108a-d5e9-4219-8861-37ec51d36c64",
+      "name": "Excel to JSON"
+    },
+    {
+      "parameters": {
+        "command": "=echo \"{{ $json.row[0] }}|{{ $json.row[1] }}|{{ $json.row[2] }}|{{ $json.row[3] }}|{{ $json.row[4] }}|{{ $json.row[5] }}|{{ $json.row[6] }}|{{ $json.row[7] }}\" | awk -F'[|]' 'NR = 1 {\n    name        = $1\n    host        = $2\n    port        = $3\n    eventname   = $4\n    severity    = $5\n    interval    = $6\n    checks      = $7\n    workgroup   = $8\n\n    if (severity == \"Severity\") {\n        print \"Monitor Name|Host FQDN|Port|Event Description|Severity|CheckInterval|ConsecutiveChecks|Workgroup\"\n        next\n    }\n\n    # Decide NAME per original rules\n    if (name == \"\") {\n            item_name = \"Port \" port \" monitoring on \" host\n    } else {\n        item_name = name\n    }\n\n    # If eventname is null, then define eventname\n    if (eventname == \"\")\n            eventname = \"Port \" port \" on host \" host \" is not responding from Zabbix Server\"\n\n    # If workgroup is null, then print empty workgroup name\n    if (workgroup == \"\")\n            workgroup = \"\"\n\n    print item_name \"|\" host \"|\" port \"|\" eventname \"|\" severity \"|\" interval \"|\" checks \"|\" workgroup\n}' >> {{ $('Parent Workflow').item.json.fileName }}.csv"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -6896,
+        -1672
+      ],
+      "id": "cf7c100c-e7ea-49cf-b88f-48efe7334ce5",
+      "name": "Create Monitors CSV File"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users AS u\nJOIN (\n  SELECT userid\n  FROM users\n  WHERE username = 'user'\n) AS x ON x.userid = u.userid\nSET u.roleid = 3;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -6000,
+        -2032
+      ],
+      "id": "e59b9be9-7a4b-4a58-8dce-f22386d1ac20",
+      "name": "Add Permission for Zabbix User",
+      "credentials": {
+        "mySql": {
+          "id": "QVNaqZe72wacdXCy",
+          "name": "Zabbix MySQL DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users AS u\nJOIN (\n  SELECT userid\n  FROM users\n  WHERE username = 'user'\n) AS x ON x.userid = u.userid\nSET u.roleid = 2;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -2640,
+        -2032
+      ],
+      "id": "1a41068c-cd2f-4b7a-94f8-080e1c581e41",
+      "name": "Revoke Permission from Zabbix User",
+      "credentials": {
+        "mySql": {
+          "id": "QVNaqZe72wacdXCy",
+          "name": "Zabbix MySQL DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.error.code }}",
+                    "rightValue": "-32602",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9a519fed-bfd5-4314-b9c4-2f2be21d4612"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "61067551-6d0c-4c34-bc79-3115e39dc73e",
+                    "leftValue": "={{ $json.error.code }}",
+                    "rightValue": "-32602",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3984,
+        -2032
+      ],
+      "id": "4174b746-a174-4097-8a8d-dc0d22e34cda",
+      "name": "Host Created?"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.approved }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "70dfd573-c056-4de8-a890-68182d73008f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4be8a9ab-73af-4c57-ab43-159c3b6b858c",
+                    "leftValue": "={{ $json.data.approved }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -6448,
+        -1864
+      ],
+      "id": "164dc802-607c-4ac0-affc-66d405a40da1",
+      "name": "Approved?"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": "=|"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -3088,
+        -2032
+      ],
+      "id": "11a57a1e-be16-4554-8011-2794ebb5b66e",
+      "name": "CSV to JSON"
+    },
+    {
+      "parameters": {
+        "command": "=rm -rf {{ $('Parent Workflow').item.json['fileName'] }}\nrm -rf {{ $('Parent Workflow').item.json['fileName'] }}*"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -2416,
+        -2032
+      ],
+      "id": "a68d7809-a4b7-468a-aec5-b4c92d4ae0bf",
+      "name": "Delete Runtime File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.error.code }}",
+                    "rightValue": "-32602",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0c6f7dc3-aa34-4e24-9b29-f0b7a2c38972"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c29a7dce-6cc2-45ae-9979-c6de881e9f6c",
+                    "leftValue": "={{ $json.error.code }}",
+                    "rightValue": "-32602",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2416,
+        -2224
+      ],
+      "id": "dee03713-ebdb-4894-88c5-b6405e7eeb1b",
+      "name": "Item Created?"
+    },
+    {
+      "parameters": {
+        "fromEmail": "zabbix-admin@example.com",
+        "toEmail": "={{ $('Parent Workflow').item.json['Email ID to send approval link'] }},zabbix-admin@example.com",
+        "subject": "=Request Approved - {{ $workflow.name }} ({{ $workflow.id }}) [ {{ $('Parent Workflow').item.json['Application Name'] }} ({{ $('Parent Workflow').item.json['Application Alias Name'] }}) ({{ $('Parent Workflow').item.json['Application ASK ID'] }}) ]",
+        "html": "={{ $('HTML Monitors list').item.json['stdout'] }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -6224,
+        -2032
+      ],
+      "id": "6c0ec6d7-9155-4301-82b2-366522731304",
+      "name": "Approved",
+      "webhookId": "97cad8ea-02a5-43a9-9bb1-0c3007920050",
+      "credentials": {
+        "smtp": {
+          "id": "hlptozjprdl23nBh",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "zabbix-admin@example.com",
+        "toEmail": "={{ $('Parent Workflow').item.json['Email ID to send approval link'] }},zabbix-admin@example.com",
+        "subject": "=Request Declined - {{ $workflow.name }} ({{ $workflow.id }}) [ {{ $('Parent Workflow').item.json['Application Name'] }} ({{ $('Parent Workflow').item.json['Application Alias Name'] }}) ({{ $('Parent Workflow').item.json['Application ASK ID'] }}) ]",
+        "html": "={{ $('HTML Monitors list').item.json['stdout'] }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -6224,
+        -1840
+      ],
+      "id": "ff47c58f-3d9c-4e92-b444-577813fe87e8",
+      "name": "Declined",
+      "webhookId": "97cad8ea-02a5-43a9-9bb1-0c3007920050",
+      "credentials": {
+        "smtp": {
+          "id": "hlptozjprdl23nBh",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -7120,
+        -1720
+      ],
+      "id": "758e3bac-25b1-4d40-80aa-51696061441e",
+      "name": "Loop Over Monitors"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "922fa53b-4114-4dc9-a432-e54d3f658d2a",
+              "name": "stdout",
+              "value": "={{   String($('Parent Workflow')?.item?.json?.['Application Alias Name'] ?? '')     .replace(/[~!@#$%\\^&\\*\\()\\+=\\{\\}\\\\:;\\\"?\\/<>,`|\\[\\]']/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5328,
+        -2032
+      ],
+      "id": "eedfacca-b0ee-4f62-aa99-a75b104ef82c",
+      "name": "Exclude Special Characters"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create Template Group": {
+      "main": [
+        [
+          {
+            "node": "Create Host Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Host Group": {
+      "main": [
+        [
+          {
+            "node": "Exclude Special Characters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Host Group ID": {
+      "main": [
+        [
+          {
+            "node": "Create Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Group ID": {
+      "main": [
+        [
+          {
+            "node": "Host Group ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template ID": {
+      "main": [
+        [
+          {
+            "node": "Create Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read CSV": {
+      "main": [
+        [
+          {
+            "node": "CSV to JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Revoke Permission from Zabbix User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parent Workflow": {
+      "main": [
+        [
+          {
+            "node": "Excel to JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Host ID": {
+      "main": [
+        [
+          {
+            "node": "Update Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Template": {
+      "main": [
+        [
+          {
+            "node": "Template ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Host": {
+      "main": [
+        [
+          {
+            "node": "Host Created?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Host": {
+      "main": [
+        [
+          {
+            "node": "Read CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Item": {
+      "main": [
+        [
+          {
+            "node": "Item Created?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Trigger": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Approval": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Monitors list": {
+      "main": [
+        [
+          {
+            "node": "Email Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel to JSON": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Monitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Monitors CSV File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Monitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Permission for Zabbix User": {
+      "main": [
+        [
+          {
+            "node": "Create Template Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revoke Permission from Zabbix User": {
+      "main": [
+        [
+          {
+            "node": "Delete Runtime File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Host Created?": {
+      "main": [
+        [
+          {
+            "node": "Host ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Approved",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CSV to JSON": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Created?": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Trigger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved": {
+      "main": [
+        [
+          {
+            "node": "Add Permission for Zabbix User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Monitors": {
+      "main": [
+        [
+          {
+            "node": "HTML Monitors list",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Monitors CSV File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude Special Characters": {
+      "main": [
+        [
+          {
+            "node": "Template Group ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6a937c4c-8883-4c9b-a8eb-47dec2a77946",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f9b7d8392fb9b22e1572f122d2199da1a316578c69792bb5ebd6447fbba818b"
+  },
+  "id": "aFL7AQzqPtaFqPeZ",
+  "tags": []
+}
