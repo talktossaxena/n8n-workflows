@@ -104,3 +104,23 @@
     The Excel report is emailed to the requester and the Zabbix admin simultaneously.
 
 <img width="997" height="148" alt="image" src="https://github.com/user-attachments/assets/0d49569a-c579-4ec8-92a3-f97bac6ec661" />
+
+# 🛰️ Zabbix - List Non-WEB Monitors
+
+### 🛠️ **How it works**
+
+1.  🏁 **The Trigger (Parent Workflow):**
+    The workflow is initiated by a central parent process, receiving an **Application Name** and a recipient **Email ID** as input.
+2.  🔡 **Smart Name Matching:**
+    It uses a JavaScript **Code Node** to generate every possible variation of the application name (UPPERCASE, lowercase, Title Case, etc.). This ensures the workflow finds the monitoring data even if it was tagged inconsistently in Zabbix.
+3.  📡 **Deep Zabbix Data Mining:**
+    *   **Host Get:** Queries the Zabbix API to find all hosts tagged with the application's name.
+    *   **Items Get:** For those hosts, it pulls every standard monitor (Zabbix agent, SNMP, SSH, Database monitors, etc.).
+    *   **Trigger Expression:** It fetches the "Alert Rules" (Triggers) connected to those items to see exactly what thresholds will cause a notification.
+4.  📝 **Human-Friendly Formatting:**
+    The **Update Column Name** node translates raw technical data into readable text. It maps Zabbix numeric codes to clear labels, such as converting `Type: 0` into **"Zabbix agent"** and `Status: 0` into **"Enabled."**
+5.  📊 **File Conversion & Delivery:**
+    *   **Excel:** Bundles host names, monitor types, keys, and last recorded values into a professional `.xlsx` file.
+    *   **Email:** The final report is automatically sent to the provided email address, providing a full inventory of the non-web monitoring status.
+  
+<img width="1001" height="135" alt="image" src="https://github.com/user-attachments/assets/b45bfd7b-14af-4db4-8af8-0067eb597c1e" />
